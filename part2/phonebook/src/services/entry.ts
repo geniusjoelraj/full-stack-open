@@ -21,9 +21,14 @@ const deleteEntry = (id: string, setPersons: React.Dispatch<SetStateAction<perso
 }
 
 const updateEntry = (id: string, newPerson: personsType, setPersons: React.Dispatch<SetStateAction<personsType[]>>, persons: Array<personsType>) => {
-  axios
+  return axios
     .put(`http://localhost:3001/persons/${id}`, newPerson)
     .then((res) => setPersons(persons.map((person) => person.id == id ? res.data : person)))
+    .catch(err => {
+      `Note ${newPerson.name} was already deleted`;
+      console.log(err);
+
+    })
 }
 
 const getAllEntries = (): Promise<personsType[]> => {

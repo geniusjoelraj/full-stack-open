@@ -1,6 +1,7 @@
 import Filter from './components/Filter';
 import PersornForm from './components/PersonForm'
 import Persons from './components/Persons';
+import Notification from './components/Notification.tsx'
 import entry from './services/entry'
 import { useEffect, useState, type FormEvent } from 'react'
 
@@ -21,6 +22,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [notification, setNotification] = useState('');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,12 +36,28 @@ const App = () => {
       const change = confirm(`${newName} is already added to phonebook, replace the old number with the new one?`);
       if (change) {
         const updatedEntry = { ...foundEntry, number: newPerson.number }
-        entry.updateEntry(foundEntry.id, updatedEntry, setPersons, persons);
+        entry.updateEntry(foundEntry.id, updatedEntry, setPersons, persons)
+          .then(() => {
+            setNotification(`Updated ${updatedEntry.name}'s number`);
+            setTimeout(() => {
+              setNotification('');
+            }, 2000);
+          })
+          .catch(() => {
+            setNotification(`${updatedEntry.name}'s entry was deleted`);
+            setTimeout(() => {
+              setNotification('');
+            }, 2000);
+          })
       }
     }
     else {
       setPersons(persons.concat(newPerson));
       entry.addEntry(newPerson);
+      setNotification(` Created ${newPerson.name}'s number`);
+      setTimeout(() => {
+        setNotification('');
+      }, 2000);
     }
     setNewName('');
     setNewNumber('');
@@ -65,6 +83,12 @@ const App = () => {
         handleNumberChange={handleNumberChange}
         newName={newName}
         newNumber={newNumber} />
+
+      {notification ?
+        <Notification message={`${notification}`} />
+        :
+        null
+      }
 
       <Persons
         persons={persons}
