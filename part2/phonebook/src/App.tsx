@@ -1,60 +1,17 @@
-import axios from 'axios'
+import Filter from './components/Filter';
+import PersornForm from './components/PersonForm'
+import Persons from './components/Persons';
+import entry from './services/entry'
 import { useEffect, useState, type FormEvent } from 'react'
-
-const Filter = ({ filter, handleFilterChange }:
-  {
-    filter: string,
-    handleFilterChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  }) =>
-  <div>
-    filter: <input
-      type="text"
-      value={filter}
-      onChange={handleFilterChange} />
-  </div>
-
-const PersornForm = ({ newName, newNumber, handleSubmit, handleNumberChange, handleNameChange }:
-  {
-    handleSubmit: (e: FormEvent<HTMLFormElement>) => void,
-    handleNumberChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
-    handleNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
-    newName: string,
-    newNumber: string
-
-  }) => {
-  return <form onSubmit={handleSubmit}>
-    <div>
-      name: <input value={newName} onChange={handleNameChange} name='name' />
-      <br />
-      number: <input value={newNumber} onChange={handleNumberChange} name='number' />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-}
 
 type personsType = {
   name: string;
   number: string;
-  id: number;
-}
-
-const Persons = ({ persons, filter }: { persons: Array<personsType>, filter: string }) => {
-  return <>
-    {persons.filter((p) => p.name.toLowerCase().includes(filter)).map((person) => <p key={person.id}>{person.name} {person.number}</p>)}
-  </>
-
+  id: string;
 }
 
 const App = () => {
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(res => (
-        setPersons(res.data)
-      ));
-  }, [])
+  useEffect(() => { entry.getAllEntries(setPersons) }, [])
   const [persons, setPersons] = useState<Array<personsType>>([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('');
@@ -63,18 +20,23 @@ const App = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newPerson = {
-      id: persons.length + 1,
+      id: (persons.length + 1).toString(),
       name: newName,
       number: newNumber
     }
-    const nameExists = persons.some(person => {
-      return person.name === newName;
-    })
-    if (nameExists) {
-      alert(`${newName} is already added to phonebook`);
+    const foundEntry = persons.find(person => person.name === newPerson.name)
+    if (foundEntry) {
+      const change = confirm(`${newName} is already added to phonebook, replace the old number with the new one?`);
+      if (change) {
+        const updatedEntry = { ...foundEntry, number: newPerson.number }
+        entry.updateEntry(foundEntry.id, updatedEntry, setPersons, persons);
+      }
+
     }
     else {
       setPersons(persons.concat(newPerson));
+      entry.addEntry(newPerson);
+
     }
     setNewName('');
     setNewNumber('');
@@ -95,7 +57,6 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
-      <h2>Add new contact</h2>
       <PersornForm
         handleSubmit={handleSubmit}
         handleNameChange={handleNameChange}
@@ -103,8 +64,7 @@ const App = () => {
         newName={newName}
         newNumber={newNumber} />
 
-      <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} deleteEntry={entry.deleteEntry} setPersons={setPersons} />
     </div>
   )
 }
