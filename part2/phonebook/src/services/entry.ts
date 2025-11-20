@@ -26,12 +26,10 @@ const updateEntry = (id: string, newPerson: personsType, setPersons: React.Dispa
     .then((res) => setPersons(persons.map((person) => person.id == id ? res.data : person)))
 }
 
-const getAllEntries = (setPersons: React.Dispatch<SetStateAction<personsType[]>>) => {
-  axios
+const getAllEntries = (): Promise<personsType[]> => {
+  return axios
     .get('http://localhost:3001/persons')
-    .then(res => (
-      setPersons(res.data)
-    ));
+    .then(res => res.data);
 }
 
 

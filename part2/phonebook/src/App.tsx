@@ -11,7 +11,12 @@ type personsType = {
 }
 
 const App = () => {
-  useEffect(() => { entry.getAllEntries(setPersons) }, [])
+  useEffect(() => {
+    entry.getAllEntries()
+      .then(data => {
+        setPersons(data);
+      })
+  }, [])
   const [persons, setPersons] = useState<Array<personsType>>([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('');
@@ -31,12 +36,10 @@ const App = () => {
         const updatedEntry = { ...foundEntry, number: newPerson.number }
         entry.updateEntry(foundEntry.id, updatedEntry, setPersons, persons);
       }
-
     }
     else {
       setPersons(persons.concat(newPerson));
       entry.addEntry(newPerson);
-
     }
     setNewName('');
     setNewNumber('');
@@ -51,7 +54,6 @@ const App = () => {
     setFilter(event.target.value);
   }
 
-
   return (
     <div>
       <h2>Phonebook</h2>
@@ -64,7 +66,11 @@ const App = () => {
         newName={newName}
         newNumber={newNumber} />
 
-      <Persons persons={persons} filter={filter} deleteEntry={entry.deleteEntry} setPersons={setPersons} />
+      <Persons
+        persons={persons}
+        filter={filter}
+        deleteEntry={entry.deleteEntry}
+        setPersons={setPersons} />
     </div>
   )
 }
