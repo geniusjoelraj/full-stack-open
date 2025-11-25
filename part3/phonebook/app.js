@@ -1,14 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const Phone = require('./models/phone');
+const express = require('express')
+const cors = require('cors')
+require('dotenv').config()
+const Phone = require('./models/phone')
 const requestLogger = require('./middleware/requestLogger.js')
 const errorHandler = require('./middleware/errorHandler')
 
 
-const app = express();
+const app = express()
 app.use(express.static('dist'))
-app.use(express.json());
+app.use(express.json())
 app.use(cors())
 app.use(requestLogger)
 
@@ -22,40 +22,40 @@ app.get('/api/persons/info', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
-  const id = req.params.id;
+  const id = req.params.id
   Phone.findById(id).then(phone => {
     if (phone) {
       res.json(phone)
     } else {
-      res.status(404).end();
+      res.status(404).end()
     }
   })
     .catch(err => next(err))
 })
 
 app.put('/api/persons/:id', async (req, res, next) => {
-  const id = req.params.id;
-  const person = req.body;
+  const id = req.params.id
+  const person = req.body
   await Phone.findByIdAndUpdate(id, person)
   const numbers = await Phone.find({}).then((numbers) => res.json(numbers))
     .catch(err => next(err))
-  res.json(numbers);
+  res.json(numbers)
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
-  const id = req.params.id;
+  const id = req.params.id
   Phone.findByIdAndDelete(id).then(phone => {
     if (phone) {
       res.json(phone)
     } else {
-      res.status(404).end();
+      res.status(404).end()
     }
   })
     .catch(err => next(err))
 })
 
 app.post('/api/persons', (req, res, next) => {
-  const person = req.body;
+  const person = req.body
   const phone = new Phone({
     name: person.name,
     phonenumber: person.phonenumber

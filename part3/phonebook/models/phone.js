@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
-mongoose.set('strictQuery', false);
+mongoose.set('strictQuery', false)
 const uri = process.env.MONGO_URI
 
 mongoose.connect(uri, { family: 4 })
-  .then(res => {
-    console.log("Connected successfully")
-  })
-  .catch(err => console.log("Error connecting to mongodb: " + err.message))
+  .then(
+    console.log('Connected successfully')
+  )
+  .catch(err => console.log('Error connecting to mongodb: ' + err.message))
 
 const phoneSchema = new mongoose.Schema({
   name: {
