@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const Phone = require('./models/phone');
-const requestLogger = require('./middleware/requestLogger')
+const requestLogger = require('./middleware/requestLogger.js')
+const errorHandler = require('./middleware/errorHandler')
 
 
 const app = express();
@@ -15,13 +16,13 @@ app.get('/api/persons', (req, res) => {
   Phone.find({}).then(numbers => res.json(numbers))
 })
 
-app.get('/info', (req, res) => {
-  res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)
+app.get('/api/persons/info', (req, res) => {
+  const numbers = Phone.find({}).then(numbers => res.json(numbers))
+  res.send(`<p>Phonebook has info for ${numbers.length} people</p><p>${new Date()}</p>`)
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
-  // const person = persons.find(person => person.id.toFixed() === id);
   Phone.findById(id).then(phone => {
     if (phone) {
       res.json(phone)
@@ -29,17 +30,19 @@ app.get('/api/persons/:id', (req, res) => {
       res.status(404).end();
     }
   })
+    .catch(err => next(err))
 })
 
-app.put('/api/persons/:id', async (req, res) => {
+app.put('/api/persons/:id', async (req, res, next) => {
   const id = req.params.id;
   const person = req.body;
   await Phone.findByIdAndUpdate(id, person)
   const numbers = await Phone.find({}).then((numbers) => res.json(numbers))
+    .catch(err => next(err))
   res.json(numbers);
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
   Phone.findByIdAndDelete(id).then(phone => {
     if (phone) {
@@ -48,6 +51,7 @@ app.delete('/api/persons/:id', (req, res) => {
       res.status(404).end();
     }
   })
+    .catch(err => next(err))
 })
 
 app.post('/api/persons', (req, res) => {
@@ -70,9 +74,11 @@ app.post('/api/persons', (req, res) => {
     phone.save().then(savedPerson => {
       res.json(savedPerson)
     })
+      .catch(err => next(err))
   }
 })
 
+app.use(errorHandler)
 const PORT = process.env.PORT
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
