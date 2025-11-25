@@ -13,7 +13,7 @@ const baseURL = "/api/persons"
 
 const addEntry = (newPerson: { name: string, phonenumber: string }) => {
   return axios.post(baseURL, newPerson)
-    .then((data) => data)
+    .then((data) => data.data)
 }
 
 const deleteEntry = (id: string, setPersons: React.Dispatch<SetStateAction<personsType[]>>) => {

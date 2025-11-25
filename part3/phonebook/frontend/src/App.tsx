@@ -12,6 +12,11 @@ type personsType = {
   id: string;
 }
 
+type notiType = {
+  message: string;
+  type: "success" | "error";
+} | null
+
 const App = () => {
   useEffect(() => {
     entry.getAllEntries()
@@ -24,7 +29,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
-  const [notification, setNotification] = useState('');
+  const [notification, setNotification] = useState<notiType>(null);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,26 +47,29 @@ const App = () => {
             if (res) {
               setPersons(res.data);
             }
-            setNotification(`Updated ${updatedEntry.name}'s number`);
+            setNotification({ message: `Updated ${updatedEntry.name}'s number`, type: "success" });
             setTimeout(() => {
-              setNotification('');
-            }, 2000);
+              setNotification(null);
+            }, 5000);
           })
           .catch(() => {
-            setNotification(`${updatedEntry.name}'s entry was deleted`);
+            setNotification({ message: `${updatedEntry.name}'s entry was deleted`, type: 'error' });
             setTimeout(() => {
-              setNotification('');
-            }, 2000);
+              setNotification(null);
+            }, 5000);
           })
       }
     }
     else {
       entry.addEntry(newPerson)
-        .then(res => setPersons(prev => [...prev, res.data]))
-      setNotification(` Created ${newPerson.name}'s number`);
+        .then(res => {
+          setPersons(prev => [...prev, res])
+          setNotification({ message: ` Created ${newPerson.name}'s number`, type: 'success' });
+        })
+        .catch(err => setNotification({ message: err.response.data.error, type: 'error' }))
       setTimeout(() => {
-        setNotification('');
-      }, 2000);
+        setNotification(null);
+      }, 5000);
     }
     setNewName('');
     setNewNumber('');
@@ -89,7 +97,7 @@ const App = () => {
         newNumber={newNumber} />
 
       {notification ?
-        <Notification message={`${notification}`} />
+        <Notification message={`${notification.message}`} type={`${notification.type}`} />
         :
         null
       }

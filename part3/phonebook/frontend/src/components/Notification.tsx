@@ -1,7 +1,7 @@
 import '../assets/styles/style.css'
 
-function Notification({ message }: { message: string }) {
-  return <div className="notification">{message}</div>
+function Notification({ message, type }: { message: string, type: string }) {
+  return <div className={`notification ${type}`}>{message}</div>
 }
 
 export default Notification;

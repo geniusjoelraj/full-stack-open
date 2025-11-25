@@ -16,7 +16,11 @@ const Persons = ({ persons, filter, deleteEntry, setPersons }: { persons: Array<
           key={person.id}
         >
           {person.name} {person.phonenumber} &nbsp;
-          <button onClick={() => deleteEntry(person.id, setPersons)}>delete</button>
+          <button onClick={() => {
+            deleteEntry(person.id, setPersons)
+          }}>
+            delete
+          </button>
         </p>
       )}
   </>

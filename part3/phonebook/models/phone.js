@@ -9,8 +9,16 @@ mongoose.connect(uri, { family: 4 })
   .catch(err => console.log("Error connecting to mongodb: " + err.message))
 
 const phoneSchema = new mongoose.Schema({
-  name: String,
-  phonenumber: Number
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  phonenumber: {
+    type: String,
+    minLength: 10,
+    required: true
+  }
 })
 
 phoneSchema.set('toJSON', {

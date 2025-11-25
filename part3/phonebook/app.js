@@ -54,28 +54,16 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(err => next(err))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const person = req.body;
-  if (!person.name) {
-    res.status(400).json({
-      error: "Name is required"
-    })
-  }
-  else if (!person.phonenumber) {
-    res.status(400).json({
-      error: "Number is required"
-    })
-  }
-  else {
-    const phone = new Phone({
-      name: person.name,
-      phonenumber: person.phonenumber
-    })
-    phone.save().then(savedPerson => {
-      res.json(savedPerson)
-    })
-      .catch(err => next(err))
-  }
+  const phone = new Phone({
+    name: person.name,
+    phonenumber: person.phonenumber
+  })
+  phone.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
+    .catch(err => next(err))
 })
 
 app.use(errorHandler)
