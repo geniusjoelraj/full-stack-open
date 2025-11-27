@@ -7,22 +7,25 @@ type personsType = {
   id: string;
 }
 
-const addEntry = (newPerson: personsType) => {
-  axios.post("http://localhost:3001/persons", newPerson)
+const baseURL = "/api/persons"
+
+
+const addEntry = (newPerson: any, setPersons: React.Dispatch<React.SetStateAction<personsType[]>>) => {
+  axios.post(baseURL, newPerson)
     .then((res) => res.data)
-    .then((data) => console.log(data)
+    .then((data) => setPersons(data)
     )
 }
 
 const deleteEntry = (id: string, setPersons: React.Dispatch<SetStateAction<personsType[]>>) => {
   axios
-    .delete(`http://localhost:3001/persons/${id}`)
-  setPersons(prev => prev.filter(person => person.id != id))
+    .delete(`${baseURL}/${id}`)
+  setPersons(prev => prev.filter(person => person.id.toString() != id.toString()))
 }
 
 const updateEntry = (id: string, newPerson: personsType, setPersons: React.Dispatch<SetStateAction<personsType[]>>, persons: Array<personsType>) => {
   return axios
-    .put(`http://localhost:3001/persons/${id}`, newPerson)
+    .put(`${baseURL}/${id}`, newPerson)
     .then((res) => setPersons(persons.map((person) => person.id == id ? res.data : person)))
     .catch(err => {
       `Note ${newPerson.name} was already deleted`;
@@ -33,7 +36,7 @@ const updateEntry = (id: string, newPerson: personsType, setPersons: React.Dispa
 
 const getAllEntries = (): Promise<personsType[]> => {
   return axios
-    .get('http://localhost:3001/persons')
+    .get(baseURL)
     .then(res => res.data);
 }
 

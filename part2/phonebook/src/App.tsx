@@ -5,6 +5,7 @@ import Notification from './components/Notification.tsx'
 import entry from './services/entry'
 import { useEffect, useState, type FormEvent } from 'react'
 
+
 type personsType = {
   name: string;
   number: string;
@@ -27,7 +28,6 @@ const App = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newPerson = {
-      id: (persons.length + 1).toString(),
       name: newName,
       number: newNumber
     }
@@ -52,8 +52,7 @@ const App = () => {
       }
     }
     else {
-      setPersons(persons.concat(newPerson));
-      entry.addEntry(newPerson);
+      entry.addEntry(newPerson, setPersons);
       setNotification(` Created ${newPerson.name}'s number`);
       setTimeout(() => {
         setNotification('');
