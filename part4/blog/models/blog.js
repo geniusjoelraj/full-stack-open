@@ -7,7 +7,8 @@ const blogSchema = mongoose.Schema({
   },
   author: {
     type: String,
-    required: true
+    required: false,
+    default: "anonymous"
   },
   url: {
     type: String,
@@ -15,7 +16,8 @@ const blogSchema = mongoose.Schema({
   },
   likes: {
     type: Number,
-    required: true
+    required: false,
+    default: 0
   },
 })
 

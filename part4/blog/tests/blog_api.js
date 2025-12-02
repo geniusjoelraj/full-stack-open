@@ -58,23 +58,54 @@ describe('testing get', async () => {
   //   assert(Object.keys(res.body[0]).includes("id"))
   //
   // })
+  // test('likes property is missing', async () => {
+  //   const res = await api
+  //     .get('/api/blog')
+  //     .expect(200)
+  //   assert(Object.keys(res.body[0]).includes('likes'))
+  // })
 })
 
 describe('testing post', async () => {
   test('post creates a blog', async () => {
-    const newBlog = new Blog({
-      "title": "test blog",
-      "author": "admin",
-      "url": "http://localhost:3001",
-      "likes": 1,
-    })
+    const newBlog = initialBlogs[0]
     await api
       .post('/api/blog')
       .send(newBlog)
     const res = await api
       .get('/api/blog')
       .expect(200)
-    assert(res._body.length, 3)
+    assert.strictEqual(res.body.length, 3)
+  })
+  test('post has title and url', async () => {
+    const newBlog = {
+      "title": "My first blog",
+      "url": "http://localhost:3001"
+    }
+    await api
+      .post('/api/blog')
+      .send(newBlog)
+      .expect(200)
+  })
+  test('post has no title', async () => {
+    const newblog = {
+      "title": "my first blog",
+      "likes": 10
+    }
+    await api
+      .post('/api/blog')
+      .send(newblog)
+      .expect(400)
+  })
+  test('post has no title', async () => {
+    const newblog = {
+      "url": "http://localhost:3001",
+      "likes": 10
+    }
+    await api
+      .post('/api/blog')
+      .send(newblog)
+      .expect(400)
   })
 })
 
